@@ -29,4 +29,5 @@ struct Command
 };
 
 int parse(const std::string& line, Command* out);
-
+void parsePath(const std::string& line, std::vector<std::string>* out);
+std::string findInPath(const std::string& name);

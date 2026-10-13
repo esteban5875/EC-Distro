@@ -15,10 +15,12 @@ static inline int prompt(){
     return 1;
 }
 
-static void run_command(const std::vector<std::string>& args) {}
+static void run_proc(const std::vector<std::string>& args) {}
 
 int main()
 {
+    setenv("PATH", "/bin", 0);
+
     std::string input;
 
     while(prompt() && std::getline(std::cin, input)){
