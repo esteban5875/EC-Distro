@@ -6,7 +6,7 @@
 #include <iostream>
 
 static std::unordered_map<std::string, CommandName> CommandMap = {
-    {"Echo", CommandName::Echo},
+    {"echo", CommandName::Echo},
 };
 
 static std::vector<std::string> splitBySpaces(const std::string& str) {
@@ -21,26 +21,30 @@ static std::vector<std::string> splitBySpaces(const std::string& str) {
     return tokens;
 }
 
-int parse(const std::string& line, Command* out){
-
-    if (line == ""){
-        return 0;
-    }
-
+int parse(const std::string& line, Command* out) {
     std::vector<std::string> parsedCommand = splitBySpaces(line);
+    if (parsedCommand.empty()) {
+        return 1;   
+    }
 
     auto it = CommandMap.find(parsedCommand[0]);
-    CommandName commandName = (it != CommandMap.end()) ? it->second : CommandName::Unknown;
+    CommandName commandName =
+        (it != CommandMap.end()) ? it->second : CommandName::Unknown;
     std::vector<std::string> args(parsedCommand.begin() + 1, parsedCommand.end());
 
-    switch (commandName)
-    {
-    case CommandName::Echo:{
-        echo(args);
+    switch (commandName) {
+    case CommandName::Echo:
+        out->name = CommandName::Echo;
+        out->args = std::move(args);
+        break;
+    case CommandName::Type:
+        out->name = CommandName::Type;
+        out->args = std::move(args);
+        break;
+    case CommandName::Unknown:
+        out->name = CommandName::Unknown;
+        out->enteredInput = parsedCommand[0];
         break;
     }
-
-    case CommandName::Unknown:
-        return 1;
-    }
+    return 0;
 }

@@ -1,9 +1,19 @@
 #include <iostream>
 #include <unistd.h>
 #include <sys/wait.h>
-#include <vector>
 
+//Built ins
 #include "./src/include/echo.h"
+
+//Tools
+
+//Shell Logic
+#include "./src/include/shell.h"
+
+static inline int prompt(){
+    std::cout << "$\x20\x20";
+    return 1;
+}
 
 static void run_command(const std::vector<std::string>& args) {}
 
@@ -11,9 +21,30 @@ int main()
 {
     std::string input;
 
-    while(std::cout << "$\x20\x20" && std::getline(std::cin, input)){
+    while(prompt() && std::getline(std::cin, input)){
         if (input == "exit"){
+            prompt();
             std::cout << "Bye" << std::endl;
+            break;
+        }
+
+        Command outCommand;
+
+        int parseCommand = parse(input, &outCommand);
+
+        if (parseCommand == 1){
+            continue;
+        }
+
+        switch (outCommand.name)
+        {
+        case CommandName::Echo:
+            prompt();
+            echo(outCommand.args);
+            break;
+        
+        case CommandName::Unknown:
+            std::cout << "Unknown command:" + outCommand.enteredInput << std::endl;
             break;
         }
     }
