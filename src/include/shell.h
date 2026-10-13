@@ -5,6 +5,7 @@
 #include <string_view>
 
 enum class CommandName{Echo, Type, Unknown};
+enum class CommandType{File, Alias, Function, Keyword, Unknown};
 
 static constexpr std::string_view commandToString(CommandName c){
     switch (c) {

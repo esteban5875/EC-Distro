@@ -1,3 +1,3 @@
+#include "../include/type.h"
 
-
-void type();
+void type(const std::vector<std::string>& args);
