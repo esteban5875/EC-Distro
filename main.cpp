@@ -5,8 +5,7 @@
 //Tools
 
 //Shell Logic
-#include "./src/include/shell.h"
-#include "./src/include/commandFunc.h"
+#include "./src/include.h"
 
 static inline int prompt(){
     std::cout << "$\x20\x20";

@@ -1,9 +1,6 @@
-#include "../include/type.h"
-#include "commandFunc.h"
+#include "../header/commandFunc.h"
+#include "../header/typeData.h"
 
-
-DECLARE_COMMAND(builtIntype, int){
-
+DEFINE_COMMAND_INT_RETURN(builtInType) {
     return 0;
 }
-

@@ -1,4 +1,4 @@
-#include "../include/commandFunc.h"
+#include "../header/commandFunc.h"
 
 #include <iostream>
 
@@ -45,6 +45,6 @@ static std::string joinBySpaces(const std::vector<std::string>& words) {
     return result;
 }
 
-DECLARE_COMMAND(echo, void){
+DEFINE_COMMAND_VOID_RETURN(echo){
     std::cout << unescape(joinBySpaces(cmd->args));
 }
