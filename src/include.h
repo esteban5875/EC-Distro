@@ -5,8 +5,8 @@
 
 //Void Return Commands (Direct Action)
 
-DECLARE_COMMAND_LINK_VOID(echo);
+EXPOSE_COMMAND_VOID(echo);
 
 //Int Return Commands (Error Handling)
 
-DECLARE_COMMAND_LINK_INT(builtInType);
+EXPOSE_COMMAND_INT(builtInType);
