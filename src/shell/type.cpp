@@ -1,5 +1,8 @@
 #include "../include/type.h"
+#include "commandFunc.h"
 
-void type(const std::vector<std::string>& args){
-    
-};
+
+DECLARE_COMMAND(builtIntype){
+
+}
+

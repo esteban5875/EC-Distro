@@ -3,9 +3,9 @@
 #include <string>
 #include <vector>
 #include <string_view>
+#include <type_traits>
 
 enum class CommandName{Echo, Type, Unknown};
-enum class CommandType{File, Alias, Function, Keyword, Unknown};
 
 static constexpr std::string_view commandToString(CommandName c){
     switch (c) {
@@ -27,6 +27,11 @@ struct Command
         return std::string(commandToString(name)); 
     }
 };
+
+
+template <typename CommandFunc>
+using EnableIfCommandFunc = std::enable_if_t<std::is_invocable_r_v<bool, CommandFunc, Command*>>;
+
 
 int parse(const std::string& line, Command* out);
 void parsePath(const std::string& line, std::vector<std::string>* out);

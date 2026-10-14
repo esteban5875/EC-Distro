@@ -1,5 +1,4 @@
 #include "../include/shell.h"
-#include "../include/echo.h"
 
 #include <sstream>
 #include <unordered_map>

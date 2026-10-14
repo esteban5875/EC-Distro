@@ -2,13 +2,11 @@
 #include <unistd.h>
 #include <sys/wait.h>
 
-//Built ins
-#include "./src/include/echo.h"
-
 //Tools
 
 //Shell Logic
 #include "./src/include/shell.h"
+#include "./src/include/commandFunc.h"
 
 static inline int prompt(){
     std::cout << "$\x20\x20";
@@ -41,8 +39,7 @@ int main()
         switch (outCommand.name)
         {
         case CommandName::Echo:
-            prompt();
-            echo(outCommand.args);
+            echo(&outCommand);
             break;
         
         case CommandName::Unknown:
