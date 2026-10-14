@@ -45,7 +45,6 @@ static std::string joinBySpaces(const std::vector<std::string>& words) {
     return result;
 }
 
-DECLARE_COMMAND(echo){
+DECLARE_COMMAND(echo, void){
     std::cout << unescape(joinBySpaces(cmd->args));
-    return 0;
 }

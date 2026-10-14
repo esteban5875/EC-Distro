@@ -2,7 +2,8 @@
 #include "commandFunc.h"
 
 
-DECLARE_COMMAND(builtIntype){
+DECLARE_COMMAND(builtIntype, int){
 
+    return 0;
 }
 
