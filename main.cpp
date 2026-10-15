@@ -7,11 +7,6 @@
 //Shell Logic
 #include "./src/include.h"
 
-static inline int prompt(){
-    std::cout << "$\x20\x20";
-    return 1;
-}
-
 static void run_proc(const std::vector<std::string>& args) {}
 
 int main()
@@ -25,6 +20,9 @@ int main()
             prompt();
             std::cout << "Bye" << std::endl;
             break;
+        } else if (input == "clear") {
+            clearScreen();
+            continue;
         }
 
         Command outCommand;
@@ -40,8 +38,11 @@ int main()
         case CommandName::Echo:
             echo(&outCommand);
             break;
-        
-        case CommandName::Unknown:
+        case CommandName::Type:
+            builtInType(&outCommand);
+            break;
+        case CommandName::External:
+            //TODO: External command logic.
             std::cout << "Unknown command:" + outCommand.enteredInput << std::endl;
             break;
         }

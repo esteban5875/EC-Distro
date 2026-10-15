@@ -1,13 +1,13 @@
 #pragma once
 
 #include "shell.h"
-#include <functional>
 
 namespace Shell {
     using CommandVoid = void(Command*);
     using CommandInt  = int(Command*);
 
     CommandVoid echo;
+
     CommandInt  builtInType;
 }
 

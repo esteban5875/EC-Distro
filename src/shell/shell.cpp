@@ -1,14 +1,11 @@
-#include "../header/shell.h"
-
 #include <sstream>
 #include <unordered_map>
 #include <iostream>
 #include <sys/stat.h>
 #include <unistd.h>
 
-static std::unordered_map<std::string, CommandName> CommandMap = {
-    {"echo", CommandName::Echo},
-};
+#include "../header/shell.h"
+#include "../header/typeData.h"
 
 static std::vector<std::string> splitBySpaces(const std::string& str) {
     std::istringstream iss(str);
@@ -28,7 +25,7 @@ static bool isExecutableFile(const std::string& path) {
            && access(path.c_str(), X_OK) == 0;
 }
 
-std::vector<std::string> split(const std::string& s, char delim, bool keepEmpty = false) {
+static std::vector<std::string> split(const std::string& s, char delim, bool keepEmpty = false) {
     std::vector<std::string> parts;
     std::string current;
     for (char c : s) {
@@ -43,19 +40,47 @@ std::vector<std::string> split(const std::string& s, char delim, bool keepEmpty 
     return parts;
 }
 
-std::string findInPath(const std::string& name) {
-    if (name.find('/') != std::string::npos)          // has a slash: skip the search
-        return isExecutableFile(name) ? name : "";
+enum class FileCheck { Ok, Missing, NotRegular, NotExecutable };
+static FileCheck checkFile(const std::string& path) {
+    struct stat st;
+    if (stat(path.c_str(), &st) != 0) return FileCheck::Missing;
+    if (!S_ISREG(st.st_mode))         return FileCheck::NotRegular;
+    if (access(path.c_str(), X_OK) != 0) return FileCheck::NotExecutable;
+    return FileCheck::Ok;
+}
+
+LookupResult findInPath(const std::string& name) {
+    if (name.find('/') != std::string::npos) {
+        switch (checkFile(name)) {
+            case FileCheck::Ok:            return {LookupStatus::Found, name};
+            case FileCheck::NotRegular:    return {LookupStatus::NotRegular, name};
+            case FileCheck::NotExecutable: return {LookupStatus::NotExecutable, name};
+            case FileCheck::Missing:       return {LookupStatus::NotFound, ""};
+        }
+    }
 
     const char* env = getenv("PATH");
-    if (!env) return "";
+    if (!env) return {LookupStatus::PathUnset, ""};
+
+    LookupResult firstProblem{LookupStatus::NotFound, ""};
 
     for (const std::string& dir : split(env, ':')) {
         if (dir.empty()) continue;
         std::string candidate = dir + "/" + name;
-        if (isExecutableFile(candidate)) return candidate;   // first match wins
+
+        switch (checkFile(candidate)) {
+            case FileCheck::Ok:
+                return {LookupStatus::Found, candidate}; 
+            case FileCheck::NotExecutable:
+                if (firstProblem.status == LookupStatus::NotFound)
+                    firstProblem = {LookupStatus::NotExecutable, candidate};
+                break;
+            case FileCheck::NotRegular:
+            case FileCheck::Missing:
+                break;   
+        }
     }
-    return "";
+    return firstProblem;   
 }
 
 int parse(const std::string& line, Command* out) {
@@ -66,7 +91,7 @@ int parse(const std::string& line, Command* out) {
 
     auto it = CommandMap.find(parsedCommand[0]);
     CommandName commandName =
-        (it != CommandMap.end()) ? it->second : CommandName::Unknown;
+        (it != CommandMap.end()) ? it->second : CommandName::External;
     std::vector<std::string> args(parsedCommand.begin() + 1, parsedCommand.end());
 
     switch (commandName) {
@@ -78,8 +103,8 @@ int parse(const std::string& line, Command* out) {
         out->name = CommandName::Type;
         out->args = std::move(args);
         break;
-    case CommandName::Unknown:
-        out->name = CommandName::Unknown;
+    case CommandName::External:
+        out->name = CommandName::External;
         out->enteredInput = parsedCommand[0];
         out->args = std::move(args);
         break;

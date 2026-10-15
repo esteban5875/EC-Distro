@@ -1,38 +1,33 @@
 #pragma once
-
 #include <string>
-#include <vector>
 #include <string_view>
-#include <type_traits>
+#include <unordered_map>
+#include <vector>
 
-enum class CommandName{Echo, Type, Unknown};
+enum class CommandName { Echo, Type, Clear, Exit, External };
 
-static constexpr std::string_view commandToString(CommandName c){
-    switch (c) {
-        case CommandName::Echo: return "Echo";
-        case CommandName::Type: return "Type";
-        default:                return "Unknown";        
-    }
-}
+enum class LookupStatus { Found, NotFound, NotExecutable, NotRegular, PathUnset };
 
-struct Command
-{
-    CommandName name;
-    std::vector<std::string> args;
-    std::string enteredInput; //Only if command unknown for debugging
-
-    bool isBuiltin() const { return name != CommandName::Unknown; }
-
-    std::string toString() const {
-        return std::string(commandToString(name)); 
-    }
+struct LookupResult {
+    LookupStatus status;
+    std::string  path;
 };
 
+inline const std::unordered_map<std::string, CommandName> CommandMap = {
+    {"echo", CommandName::Echo},
+    {"type", CommandName::Type},
+    {"clear", CommandName::Clear},
+    {"exit", CommandName::Exit}
+};
 
-template <typename CommandFunc>
-using EnableIfCommandFunc = std::enable_if_t<std::is_invocable_r_v<bool, CommandFunc, Command*>>;
+struct Command {
+    CommandName name = CommandName::External;
+    std::string enteredInput;            // what the user typed as the command name
+    std::vector<std::string> args;
 
+    bool isBuiltin() const { return name != CommandName::External; }
+};
 
 int parse(const std::string& line, Command* out);
 void parsePath(const std::string& line, std::vector<std::string>* out);
-std::string findInPath(const std::string& name);
+LookupResult findInPath(const std::string& name);
