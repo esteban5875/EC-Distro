@@ -11,15 +11,14 @@
 //Simple prompt func
 
 inline int prompt(){
-    int status = getWorkingDir();
-    if (status == 1){
+    if (getWorkingDir() == 1){
         std::cout << "$\x20" << SHELL_PRINT_BUFFER << "\x20\x20:" << "\x20\x20";
         std::memset(SHELL_PRINT_BUFFER, 0, sizeof(SHELL_PRINT_BUFFER));
     } else {
         std::cout << "$\x20\x20";
     }
 
-    return status;
+    return 1;
 }
 
 //Simple clear func

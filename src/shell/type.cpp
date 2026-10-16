@@ -1,6 +1,5 @@
-#include <iostream>
-
 #include "../header/builtInCommands.h"
+#include "../header/constants.h"
 #include "../header/typeData.h"
 #include "../header/shell.h"
 
@@ -13,7 +12,7 @@ int builtInType(Command* cmd) {
 
     for (const std::string& name : cmd->args) {
         if (CommandMap.find(name) != CommandMap.end()) {
-            std::cout << name << " is a shell builtin\n";
+            printLine("%s is a shell builtin", name.c_str());
             continue;
         }
 
@@ -21,22 +20,22 @@ int builtInType(Command* cmd) {
 
         switch (r.status) {
             case LookupStatus::Found:
-                std::cout << name << " is " << r.path << '\n';
+                printLine("%s is %s", name.c_str(), r.path.c_str());
                 break;
             case LookupStatus::NotFound:
-                std::cerr << name << ": not found\n";
+                errLine("%s: not found", name.c_str());
                 status = 1;
                 break;
             case LookupStatus::NotExecutable:
-                std::cerr << name << ": " << r.path << ": permission denied\n";
+                errLine("%s: %s: permission denied", name.c_str(), r.path.c_str());
                 status = 1;
                 break;
             case LookupStatus::NotRegular:
-                std::cerr << name << ": not a regular file\n";
+                errLine("%s: not a regular file", name.c_str());
                 status = 1;
                 break;
             case LookupStatus::PathUnset:
-                std::cerr << name << ": PATH is not set\n";
+                errLine("%s: PATH is not set", name.c_str());
                 status = 1;
                 return status;
         }

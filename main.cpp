@@ -14,17 +14,6 @@ int main()
     int lastStatus = 0;
 
     while(prompt() && std::getline(std::cin, input)){
-        if (input == "exit"){
-            prompt();
-            std::snprintf(SHELL_PRINT_BUFFER, sizeof(SHELL_PRINT_BUFFER), "%s", "Bye");
-            std::cout << SHELL_PRINT_BUFFER << '\n';
-            std::memset(SHELL_PRINT_BUFFER, 0, sizeof(SHELL_PRINT_BUFFER));
-            break;
-        } else if (input == "clear") {
-            clearScreen();
-            continue;
-        }
-
         Command outCommand;
 
         int parseCommand = parse(input, &outCommand);
@@ -33,10 +22,22 @@ int main()
             continue;
         }
 
+        if (outCommand.name == CommandName::Exit){
+            prompt();
+            printLine("Bye");
+            break;
+        }
+
         switch (outCommand.name)
         {
+            case CommandName::Exit:
+                break;
+            case CommandName::Clear:
+                clearScreen();
+                lastStatus = 0;
+                break;
             case CommandName::Echo:
-                lastStatus = builtInEcho(&outCommand, SHELL_PRINT_BUFFER); 
+                lastStatus = builtInEcho(&outCommand); 
                 break;
             case CommandName::Type:
                 lastStatus = builtInType(&outCommand);
@@ -56,12 +57,12 @@ int main()
                         break;
                     case LookupStatus::NotFound:
                     case LookupStatus::PathUnset:
-                        std::cerr << outCommand.enteredInput << ": command not found\n";
+                        errLine("%s: command not found", outCommand.enteredInput.c_str());
                         lastStatus = 127;
                         break;
                     case LookupStatus::NotExecutable:
                     case LookupStatus::NotRegular:
-                        std::cerr << outCommand.enteredInput << ": cannot execute\n";
+                        errLine("%s: cannot execute", outCommand.enteredInput.c_str());
                         lastStatus = 126;
                         break;
                 }

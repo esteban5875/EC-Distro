@@ -9,6 +9,7 @@
 
 #include "../header/shell.h"
 #include "../header/typeData.h"
+#include "../header/constants.h"
 
 static std::vector<std::string> splitBySpaces(const std::string& str) {
     std::istringstream iss(str);
@@ -101,13 +102,13 @@ int runExternal(const std::string& path, Command* command){
     pid_t pid = fork();
 
     if(pid < 0) {
-        std::cerr << "fork: " << std::strerror(errno) << '\n';
+        errLine("fork: %s", std::strerror(errno));
         return 1;
     }
 
     if (pid == 0) {                                 
         execv(path.c_str(), argv.data());
-        std::cerr << command->enteredInput << ": " << std::strerror(errno) << '\n';   
+        errLine("%s: %s", command->enteredInput.c_str(), std::strerror(errno));   
         _exit(errno == ENOENT ? 127 : 126);
     }
 
@@ -144,6 +145,12 @@ int parse(const std::string& line, Command* out) {
         break;
     case CommandName::Cd:
         out->name = CommandName::Cd;
+        break;
+    case CommandName::Clear:
+        out->name = CommandName::Clear;
+        break;
+    case CommandName::Exit:
+        out->name = CommandName::Exit;
         break;
     case CommandName::External:
         out->name = CommandName::External;
