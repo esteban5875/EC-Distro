@@ -3,9 +3,9 @@
 #include <cstring>
 #include <iostream>
 
-#include "../header/commandFunc.h"
+#include "../header/builtInCommands.h"
 
-DEFINE_COMMAND_INT_RETURN(builtInChdir) {
+int builtInChdir(Command* cmd){
     if (cmd->args.size() > 1) {
         std::cerr << "cd: too many arguments\n";
         return 1;

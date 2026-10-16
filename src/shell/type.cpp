@@ -1,10 +1,10 @@
 #include <iostream>
 
-#include "../header/commandFunc.h"
+#include "../header/builtInCommands.h"
 #include "../header/typeData.h"
 #include "../header/shell.h"
 
-DEFINE_COMMAND_INT_RETURN(builtInType) {
+int builtInType(Command* cmd) {
     int status = 0;
 
     if (cmd->args.size() == 0){

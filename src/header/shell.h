@@ -1,4 +1,5 @@
 #pragma once
+
 #include <string>
 #include <string_view>
 #include <unordered_map>
@@ -31,6 +32,7 @@ struct Command {
 };
 
 int getWorkingDir();
+int runExternal(const std::string& path, Command* command);
 int parse(const std::string& line, Command* out);
 void parsePath(const std::string& line, std::vector<std::string>* out);
 LookupResult findInPath(const std::string& name);

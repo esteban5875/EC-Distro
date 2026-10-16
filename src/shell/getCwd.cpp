@@ -3,7 +3,7 @@
 #include <cstring>   
 #include <iostream>
 
-#include "../header/commandFunc.h"
+#include "../header/builtInCommands.h"
 #include "../header/constants.h"
 
 int getWorkingDir(){
@@ -18,7 +18,7 @@ int getWorkingDir(){
     return status;
 }
 
-DEFINE_COMMAND_INT_RETURN(builtInPwd){
+int builtInPwd(){
     char buf[4096];
 
     int pwdStatus = getWorkingDir();

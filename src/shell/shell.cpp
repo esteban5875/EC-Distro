@@ -3,6 +3,9 @@
 #include <iostream>
 #include <sys/stat.h>
 #include <unistd.h>
+#include <cstring>
+#include <sys/wait.h>
+#include <cerrno>
 
 #include "../header/shell.h"
 #include "../header/typeData.h"
@@ -82,6 +85,41 @@ LookupResult findInPath(const std::string& name) {
     }
     return firstProblem;   
 }
+
+int runExternal(const std::string& path, Command* command){
+
+    //Convert std::string into C-style arg array
+
+    std::vector<char*> argv;
+    argv.push_back(const_cast<char*>(command->enteredInput.c_str()));
+    for (const auto& a : command->args) argv.push_back(const_cast<char*>(a.c_str()));
+    argv.push_back(nullptr);
+
+    std::cout << std::flush;
+    std::cerr << std::flush;
+
+    pid_t pid = fork();
+
+    if(pid < 0) {
+        std::cerr << "fork: " << std::strerror(errno) << '\n';
+        return 1;
+    }
+
+    if (pid == 0) {                                 
+        execv(path.c_str(), argv.data());
+        std::cerr << command->enteredInput << ": " << std::strerror(errno) << '\n';   
+        _exit(errno == ENOENT ? 127 : 126);
+    }
+
+    int status = 0;                                 
+    while (waitpid(pid, &status, 0) < 0) {
+        if (errno != EINTR) return 1;
+    }
+
+    if (WIFEXITED(status))   return WEXITSTATUS(status);
+    if (WIFSIGNALED(status)) return 128 + WTERMSIG(status);
+    return 1;
+};
 
 int parse(const std::string& line, Command* out) {
     std::vector<std::string> parsedCommand = splitBySpaces(line);
