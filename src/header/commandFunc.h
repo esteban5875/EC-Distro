@@ -9,6 +9,8 @@ namespace Shell {
     CommandVoid echo;
 
     CommandInt  builtInType;
+    CommandInt  builtInChdir;
+    CommandInt  builtInPwd;
 }
 
 #define DEFINE_COMMAND_VOID_RETURN(FuncName) void Shell::FuncName(Command* cmd)

@@ -97,18 +97,20 @@ int parse(const std::string& line, Command* out) {
     switch (commandName) {
     case CommandName::Echo:
         out->name = CommandName::Echo;
-        out->args = std::move(args);
         break;
     case CommandName::Type:
         out->name = CommandName::Type;
-        out->args = std::move(args);
+        break;
+    case CommandName::Pwd:
+        out->name = CommandName::Pwd;
         break;
     case CommandName::External:
         out->name = CommandName::External;
         out->enteredInput = parsedCommand[0];
-        out->args = std::move(args);
+        
         break;
     }
 
+    out->args = std::move(args);
     return 0;
 }

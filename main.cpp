@@ -41,6 +41,9 @@ int main()
         case CommandName::Type:
             builtInType(&outCommand);
             break;
+        case CommandName::Pwd:
+            builtInPwd(&outCommand);
+            break;
         case CommandName::External:
             //TODO: External command logic.
             std::cout << "Unknown command:" + outCommand.enteredInput << std::endl;

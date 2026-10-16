@@ -1,6 +1,6 @@
-#include "../header/commandFunc.h"
-
 #include <iostream>
+
+#include "../header/commandFunc.h"
 
 static std::string unescape(const std::string& s) {
     std::string out;
