@@ -2,9 +2,6 @@
 #include <unistd.h>
 #include <sys/wait.h>
 
-//Tools
-
-//Shell Logic
 #include "./src/include.h"
 
 static void run_proc(const std::vector<std::string>& args) {}
