@@ -104,10 +104,12 @@ int parse(const std::string& line, Command* out) {
     case CommandName::Pwd:
         out->name = CommandName::Pwd;
         break;
+    case CommandName::Cd:
+        out->name = CommandName::Cd;
+        break;
     case CommandName::External:
         out->name = CommandName::External;
         out->enteredInput = parsedCommand[0];
-        
         break;
     }
 

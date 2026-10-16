@@ -4,7 +4,7 @@
 #include <unordered_map>
 #include <vector>
 
-enum class CommandName { Echo, Type, Clear, Exit, Pwd, External };
+enum class CommandName { Echo, Type, Clear, Exit, Pwd, Cd, External };
 
 enum class LookupStatus { Found, NotFound, NotExecutable, NotRegular, PathUnset };
 
@@ -18,7 +18,8 @@ inline const std::unordered_map<std::string, CommandName> CommandMap = {
     {"type", CommandName::Type},
     {"clear", CommandName::Clear},
     {"exit", CommandName::Exit},
-    {"pwd",  CommandName::Pwd}
+    {"pwd",  CommandName::Pwd},
+    {"cd", CommandName::Cd}
 };
 
 struct Command {
