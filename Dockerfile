@@ -1,3 +1,5 @@
+#Dockerfile -> Generated
+
 # ---------- Etapa 1: shell + tools estáticos ----------
 FROM alpine:3.20 AS shell-builder
 
@@ -40,6 +42,12 @@ RUN apk add --no-cache cpio gzip
 
 COPY --from=shell-builder /build/bin/shell /initramfs/init
 COPY --from=shell-builder /build/bin/tools/ /initramfs/bin/
+
+# TEMPORARY: the repo travels inside the initramfs until the repo disk exists.
+# Delete these two lines when the repo moves to its own disk.
+COPY repo/index /initramfs/mnt/repo/index
+COPY repo/packages/ /initramfs/mnt/repo/packages/
+
 RUN mkdir -p /initramfs/dev /initramfs/proc /initramfs/sys && \
     mknod -m 622 /initramfs/dev/console c 5 1 && \
     cd /initramfs && \
@@ -55,5 +63,10 @@ COPY --from=initramfs-builder /initramfs.cpio.gz /initramfs.cpio.gz
 FROM scratch AS runtime
 COPY --from=shell-builder /build/bin/shell /shell
 COPY --from=shell-builder /build/bin/tools/ /bin/
+
+# TEMPORARY: same repo copy as the initramfs, so pkg can be tested in Docker
+COPY repo/index /mnt/repo/index
+COPY repo/packages/ /mnt/repo/packages/
+
 ENV PATH=/bin
 ENTRYPOINT ["/shell"]

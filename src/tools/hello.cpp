@@ -1,6 +1,8 @@
 #include "./common/constants.h"
 
-int main(int argc, char* argv[])
+//Test tool
+
+int main(int argc, char* const argv[])
 {
     (void)argv;        
 
