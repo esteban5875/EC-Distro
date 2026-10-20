@@ -4,13 +4,6 @@
 #include <fstream>
 #include <sstream>
 
-static std::string joinPath(const std::string& a, const std::string& b) {
-    if (a.empty()) return b;
-    if (b.empty()) return a;
-    if (a.back() == '/') return a + b;
-    return a + "/" + b;
-}
-
 int loadIndex(std::vector<indexEntry> &out){
     std::string path = joinPath(repo, "index");
     std::ifstream in(path);
