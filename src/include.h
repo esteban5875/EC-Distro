@@ -6,7 +6,7 @@
 #include "./header/shell.h"
 #include "./header/builtInCommands.h"
 #include "./header/constants.h"
-
+#include "./header/init.h"
 
 //Simple prompt func
 

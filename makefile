@@ -29,12 +29,12 @@ DEPS     += $(PKG_OBJS:.o=.d)
 .PHONY: all clean container boot repo
 .SECONDARY:
 
-all: bin/shell $(TOOL_BINS) bin/tools/pkg
+all: bin/shell $(TOOL_BINS) #bin/tools/pkg
 	mkdir -p bin/tools
 
-bin/tools/pkg: $(PKG_OBJS)
-	mkdir -p $(dir $@)
-	$(CXX) $(LDFLAGS) $^ -o $@
+#bin/tools/pkg: $(PKG_OBJS)
+#	mkdir -p $(dir $@)
+#	$(CXX) $(LDFLAGS) $^ -o $@
 	
 bin/shell: $(SHELL_OBJS)
 	mkdir -p $(dir $@)
@@ -72,13 +72,9 @@ repo/index: $(REPO_TARS)
 	for n in $(REPO_NAMES); do echo "$$n $(PKG_VERSION) $$n-$(PKG_VERSION).tar"; done > $@
 
 clean:
-	rm -rf bin build out repo/build repo/stage repo/packages repo/index
-
-container: repo
-	sudo docker build --target runtime -t mi-shell-lfs .
-	sudo docker run -it --rm mi-shell-lfs
+	sudo rm -rf bin build out repo/build repo/stage repo/packages repo/index
 
 boot: repo
 	sudo docker build --target artifacts --output type=local,dest=./out .
-	qemu-system-x86_64 -m 256M -kernel out/bzImage -initrd out/initramfs.cpio.gz \
+	sudo qemu-system-x86_64 -m 256M -kernel out/bzImage -initrd out/initramfs.cpio.gz \
 	  -append "console=ttyS0 rdinit=/init" -nographic

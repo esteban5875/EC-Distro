@@ -4,27 +4,31 @@
 
 #include "./src/include.h"
 
-static void run_proc(const std::vector<std::string>& args) {}
-
 int main()
 {
     setenv("PATH", "/bin", 0);
+    const bool isInit = (getpid() == 1);
+    if (isInit) initSystem();
 
     std::string input;
     int lastStatus = 0;
 
-    while(prompt() && std::getline(std::cin, input)){
-        Command outCommand;
+    while(true){
+        if (isInit) readOrphans();
+        prompt(); 
 
-        int parseCommand = parse(input, &outCommand);
-
-        if (parseCommand == 1){
-            continue;
+        if (!std::getline(std::cin, input)) {       
+            printLine("exit");
+            if (isInit) powerOff();
+            break;
         }
 
-        if (outCommand.name == CommandName::Exit){
-            prompt();
+        Command outCommand{};
+        if (parse(input, &outCommand) == 1) continue;
+
+        if (outCommand.name == CommandName::Exit) {
             printLine("Bye");
+            if (isInit) powerOff();
             break;
         }
 

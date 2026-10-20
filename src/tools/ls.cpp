@@ -3,7 +3,7 @@
 #include <cstdlib>
 #include <cstring>
 
-#include "./common/constants.h"
+#include "./tools-common/constants.h"
 
 int main(int argc, char* const argv[])
 {
