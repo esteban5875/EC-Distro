@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.0.3
+
+- Updated changelog
+
+## 1.0.2
+
+- Made user experience more friendly by porting python build and run script through make.
+
 ## 1.0.1
 
 Licensing and documentation only; the ISO contents are unchanged from 1.0.0.
