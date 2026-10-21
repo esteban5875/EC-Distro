@@ -76,4 +76,4 @@ clean:
 
 # Build in Docker and boot in QEMU (asks for a virtual disk size). See ecdistro.py.
 boot:
-	python3 ecdistro.py
+	python3 ecdistro.py --sudo
