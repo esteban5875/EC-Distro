@@ -1,6 +1,6 @@
 # EC-DistroV1
 
-> Made with AI assistance. Build, release setup, README and orchestration was generated and reviewed with claude.  "Source code of the distro was hand-written (Except the virtual disk mount in init.cpp, which was written with Claude) and design choices made by me.
+> Made with AI assistance. Build, release setup, README and orchestration was generated and reviewed with claude. Source code of the distro was hand-written (Except the virtual disk mount in init.cpp, which was written with Claude) and design choices made by me.
 
 EC-DistroV1 is a small Linux distribution built from scratch to learn how the layers of a Linux system fit together. It has three parts: a shell written in C++17, a minimal kernel compiled from `tinyconfig`, and an initramfs where the shell runs as `/init`. The whole image boots in QEMU from a GRUB ISO, and the shell can also run on its own in a Docker container for quick testing.
 
@@ -62,6 +62,19 @@ qemu-system-x86_64 -m 256M -cdrom ec-distro-1.0.0.iso -boot d -nographic -no-reb
 
 - The ISO boots with legacy BIOS only (QEMU's default). UEFI boot is not supported yet.
 - No package or file state persists between runs.
+
+## Third-party software
+
+The released ISO contains software that is not part of this project and keeps its own license. This project's own code is under the [MIT License](LICENSE).
+
+| Component | Version | License | Source |
+|---|---|---|---|
+| Linux kernel | 6.12.1 (`tinyconfig` plus the options in `Dockerfile`) | GPL-2.0 | https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-6.12.1.tar.xz |
+| GRUB (bootloader on the ISO) | 2.12 (Alpine 3.20 package `grub-2.12-r5`) | GPL-3.0-or-later | https://ftp.gnu.org/gnu/grub/grub-2.12.tar.xz |
+
+The shell, tools and packages are statically linked against musl libc 1.2.5 (MIT) and the GCC runtime library libstdc++ (GPL-3.0 with the GCC Runtime Library Exception). The ISO is assembled with xorriso, which is not included in the image.
+
+The kernel source is exactly the tarball above (its SHA256 is pinned in `Dockerfile`), and the configuration is in `Dockerfile`, so you can rebuild the same kernel with `python3 ecdistro.py build`.
 
 ## Project layout
 
