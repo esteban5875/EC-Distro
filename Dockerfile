@@ -1,3 +1,5 @@
+#AI Generated Dockerfile for building a custom Linux kernel and initramfs with a shell and package management tools.
+
 FROM alpine:3.20 AS shell-builder
 
 RUN apk add --no-cache build-base make findutils

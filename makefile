@@ -1,4 +1,4 @@
-#Makefile -> Generated
+#AI Generated Makefile for building a custom Linux kernel and initramfs with a shell and package management tools.
 
 CXX      := g++
 CXXFLAGS := -std=c++17 -Wall -Wextra -Isrc/include -MMD -MP
