@@ -299,12 +299,16 @@ def cmd_test(args):
     check_qemu()
     iso = require_iso(args)
     check_docker(args)
+    prompt = r"\$ \S*  :  "    # the shell's prompt: "$ <cwd>  :  "
     steps = [
-        # (text to send or None, regex to wait for)
+        # (text to send or None, regex to wait for). Wait for the prompt
+        # before each command, so input doesn't race the shell's output.
         (None, r"/dev/vda mounted at /data"),
-        (None, r"\$ "),
+        (None, prompt),
         ("ls /data", r"lost\+found"),
-        ("echo ec-smoke-ok", r"^ec-smoke-ok\r?$"),
+        (None, prompt),
+        ("echo ec-smoke-ok", r"(?<!echo )ec-smoke-ok"),   # the output, not the echoed command
+        (None, prompt),
         ("exit", r"Bye"),
     ]
     with throwaway_disk(args, "32M") as disk:

@@ -38,9 +38,10 @@ RUN curl -fsSLo /tmp/linux.tar.xz \
     rm /tmp/linux.tar.xz
 
 # BLOCK..EXT2_FS: virtio disk support, so init can mount the virtual disk at /data.
+# ACPI: needed for reboot(RB_POWER_OFF) to actually power off (and QEMU to exit).
 ARG KERNEL_OPTS="64BIT BLK_DEV_INITRD RD_GZIP BINFMT_ELF BINFMT_SCRIPT PRINTK TTY \
 SERIAL_8250 SERIAL_8250_CONSOLE DEVTMPFS DEVTMPFS_MOUNT PROC_FS SYSFS FUTEX \
-BLOCK PCI VIRTIO_MENU VIRTIO VIRTIO_PCI BLK_DEV VIRTIO_BLK EXT2_FS"
+BLOCK PCI VIRTIO_MENU VIRTIO VIRTIO_PCI BLK_DEV VIRTIO_BLK EXT2_FS ACPI"
 
 RUN make tinyconfig && \
     for opt in ${KERNEL_OPTS}; do scripts/config -e "$opt"; done && \
