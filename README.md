@@ -55,7 +55,7 @@ Useful options (see `python3 ecdistro.py <command> --help`):
 Each tagged release on GitHub has the ISO, kernel and initramfs attached, plus `SHA256SUMS`. To boot a downloaded ISO you still need the disk tools image once (`python3 ecdistro.py build`), or boot it without a disk:
 
 ```sh
-qemu-system-x86_64 -m 256M -cdrom ec-distro-1.0.0.iso -boot d -nographic -no-reboot
+qemu-system-x86_64 -m 256M -cdrom ec-distro-1.0.1.iso -boot d -nographic -no-reboot
 ```
 
 ## Limitations

@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.0.1
+
+Licensing and documentation only; the ISO contents are unchanged from 1.0.0.
+
+- Add the MIT `LICENSE` file.
+- README: add a third-party software section (Linux kernel, GRUB, musl, libstdc++) with versions, licenses and source locations, and clarify which source file was written with AI assistance.
+
 ## 1.0.0
 
 First release.
