@@ -1,2 +1,11 @@
 bin
 build
+out/
+repo/build/
+repo/stage/
+repo/packages/
+repo/index
+*.iso
+*.qcow2
+*.raw
+__pycache__/
