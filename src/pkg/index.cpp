@@ -4,7 +4,7 @@
 #include <fstream>
 #include <sstream>
 
-int loadIndex(std::vector<indexEntry> &out){
+bool loadIndex(std::vector<indexEntry> &out){
     std::string path = joinPath(repo, "index");
     std::ifstream in(path);
 

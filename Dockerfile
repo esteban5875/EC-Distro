@@ -26,7 +26,8 @@ RUN make tinyconfig && \
       -e PRINTK -e TTY \
       -e SERIAL_8250 -e SERIAL_8250_CONSOLE \
       -e DEVTMPFS -e DEVTMPFS_MOUNT \
-      -e PROC_FS -e SYSFS && \
+      -e PROC_FS -e SYSFS \
+      -e FUTEX && \
     make olddefconfig && \
     make -j"$(nproc)" bzImage
 
@@ -41,7 +42,8 @@ COPY --from=shell-builder /build/bin/tools/ /initramfs/bin/
 COPY repo/index /initramfs/var/repo/index
 COPY repo/packages/ /initramfs/var/repo/packages/
 
-RUN mkdir -p /initramfs/dev /initramfs/proc /initramfs/sys && \
+RUN mkdir -p /initramfs/dev /initramfs/proc /initramfs/sys /initramfs/tmp && \
+    chmod 1777 /initramfs/tmp && \
     mknod -m 622 /initramfs/dev/console c 5 1 && \
     cd /initramfs && \
     find . | cpio -o -H newc | gzip -9 > /initramfs.cpio.gz

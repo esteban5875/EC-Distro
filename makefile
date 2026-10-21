@@ -29,13 +29,8 @@ DEPS     += $(PKG_OBJS:.o=.d)
 .PHONY: all clean container boot repo
 .SECONDARY:
 
-all: bin/shell $(TOOL_BINS) #bin/tools/pkg
-	mkdir -p bin/tools
+all: bin/shell $(TOOL_BINS) bin/tools/pkg
 
-#bin/tools/pkg: $(PKG_OBJS)
-#	mkdir -p $(dir $@)
-#	$(CXX) $(LDFLAGS) $^ -o $@
-	
 bin/shell: $(SHELL_OBJS)
 	mkdir -p $(dir $@)
 	$(CXX) $(LDFLAGS) $^ -o $@
@@ -44,6 +39,11 @@ bin/shell: $(SHELL_OBJS)
 $(TOOL_BINS): bin/tools/%: build/src/tools/%.o
 	mkdir -p $(dir $@)
 	$(CXX) $(LDFLAGS) $< -o $@
+
+# pkg is built from several sources: src/pkg/*.cpp -> bin/tools/pkg
+bin/tools/pkg: $(PKG_OBJS)
+	mkdir -p $(dir $@)
+	$(CXX) $(LDFLAGS) $^ -o $@
 
 build/%.o: %.cpp
 	mkdir -p $(dir $@)
@@ -77,4 +77,4 @@ clean:
 boot: repo
 	sudo docker build --target artifacts --output type=local,dest=./out .
 	sudo qemu-system-x86_64 -m 256M -kernel out/bzImage -initrd out/initramfs.cpio.gz \
-	  -append "console=ttyS0 rdinit=/init" -nographic
+	  -append "console=ttyS0 rdinit=/init quiet loglevel=3" -nographic

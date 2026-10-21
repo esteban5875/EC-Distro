@@ -10,4 +10,4 @@ struct indexEntry {
     std::string SHA256;
 };
 
-int loadIndex(std::vector<indexEntry> &out);
+bool loadIndex(std::vector<indexEntry> &out);

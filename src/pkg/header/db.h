@@ -12,5 +12,4 @@ struct dbEntry {
 };
 
 bool loadDB(std::vector<dbEntry> &out);
-bool searchPackage(const std::string &name, dbEntry &out);
-bool updatePkg(const std::string &name);
+bool searchPackage(const std::vector<dbEntry> &db, const std::string &name, dbEntry &out);
