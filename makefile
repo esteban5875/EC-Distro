@@ -74,7 +74,6 @@ repo/index: $(REPO_TARS)
 clean:
 	sudo rm -rf bin build out repo/build repo/stage repo/packages repo/index
 
-boot: repo
-	sudo docker build --target artifacts --output type=local,dest=./out .
-	sudo qemu-system-x86_64 -m 256M -kernel out/bzImage -initrd out/initramfs.cpio.gz \
-	  -append "console=ttyS0 rdinit=/init quiet loglevel=3" -nographic
+# Build in Docker and boot in QEMU (asks for a virtual disk size). See ecdistro.py.
+boot:
+	python3 ecdistro.py
