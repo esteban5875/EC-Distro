@@ -41,6 +41,8 @@ Each `run` creates a fresh qcow2 disk of the size you choose, formatted as ext2.
 | `run` | Creates the virtual disk, boots the ISO, deletes the disk on exit |
 | `test` | Headless boot check: boots, checks `/data`, runs a command, powers off |
 
+> For a quick start just run make boot. It will build and then run automatically.
+
 Useful options (see `python3 ecdistro.py <command> --help`):
 
 - `--disk-size 2G`: skip the size prompt (required when stdin is not a terminal)

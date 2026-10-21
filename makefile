@@ -26,7 +26,7 @@ PKG_SRCS := $(wildcard src/pkg/*.cpp)
 PKG_OBJS := $(PKG_SRCS:%.cpp=build/%.o)
 DEPS     += $(PKG_OBJS:.o=.d)
 
-.PHONY: all clean container boot repo
+.PHONY: all clean container boot repo build
 .SECONDARY:
 
 all: bin/shell $(TOOL_BINS) bin/tools/pkg
@@ -75,5 +75,7 @@ clean:
 	sudo rm -rf bin build out repo/build repo/stage repo/packages repo/index
 
 # Build in Docker and boot in QEMU (asks for a virtual disk size). See ecdistro.py.
-boot:
-	python3 ecdistro.py --sudo
+build:
+	python3 ecdistro.py build
+boot: build
+	python3 ecdistro.py run --sudo
