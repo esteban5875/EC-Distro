@@ -2,5 +2,11 @@ bin/
 build/
 out/
 .git/
+.github/
 repo/build/
 repo/stage/
+repo/packages/
+repo/index
+*.iso
+*.qcow2
+*.raw
