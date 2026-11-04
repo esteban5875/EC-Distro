@@ -1,8 +1,7 @@
 #include <iostream>
 #include <unistd.h>
-#include <sys/wait.h>
 
-#include "./src/include.h"
+#include "./core/include.h"
 
 int main()
 {

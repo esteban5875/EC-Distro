@@ -1,10 +1,8 @@
-bin
-build
-out/
-repo/build/
-repo/stage/
-repo/packages/
-repo/index
+BuildDistro
+./source/repo/build/
+./source/repo/stage/
+./source/repo/packages/
+./source/repo/index
 *.iso
 *.qcow2
 *.raw

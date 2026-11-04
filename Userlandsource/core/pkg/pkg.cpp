@@ -10,6 +10,8 @@
 #include <cstdlib>
 #include <cstring>
 
+//TODO: Fetch tarball
+
 //Static funcs for installation, three steps: unpack tarball, move to /bin, chmod 755. Returns true on success, false on failure.
 
 // Read exactly n bytes; false on EOF or error.
