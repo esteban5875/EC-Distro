@@ -7,3 +7,4 @@ BuildDistro
 *.qcow2
 *.raw
 __pycache__/
+*.env

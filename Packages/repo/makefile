@@ -1,8 +1,11 @@
+ROOT_DIR := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
+
 CXX      := g++
 CXXFLAGS := -Wall -Wextra -O2 -std=c++17
 
-SRC_DIR  := source
-BIN_DIR  := bin
+SRC_DIR  := $(ROOT_DIR)source
+BIN_DIR  := $(ROOT_DIR)bin
+TAR_DIR  := $(ROOT_DIR)tarball
 
 PROGS_DIRS := $(wildcard $(SRC_DIR)/*)
 PROGS      := $(notdir $(PROGS_DIRS))
@@ -30,5 +33,7 @@ $(foreach prog,$(PROGS),$(eval $(call PROGRAM_TEMPLATE,$(prog))))
 
 clean:
 	rm -rf $(BIN_DIR)
+	rm -f $(ROOT_DIR)index
+	rm -rf $(TAR_DIR)
 
 .PHONY: all clean

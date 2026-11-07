@@ -11,54 +11,122 @@ import (
 	"path/filepath"
 )
 
-func CreateTarball(targetDir, executablePath string) error {
-	execFile, err := os.Open(executablePath)
-	if err != nil {
-		return fmt.Errorf("failed to open executable: %w", err)
-	}
-	defer execFile.Close()
 
-	info, err := execFile.Stat()
-	if err != nil {
-		return fmt.Errorf("failed to get file stats: %w", err)
-	}
+func CreateTarball(targetDir, executablePath, headerID string) error {
+    execFile, err := os.Open(executablePath)
+    if err != nil {
+        return fmt.Errorf("failed to open executable: %w", err)
+    }
+    defer execFile.Close()
 
-	tarballName := info.Name() + ".tar.gz"
-	tarballPath := filepath.Join(targetDir, tarballName)
+    info, err := execFile.Stat()
+    if err != nil {
+        return fmt.Errorf("failed to get file stats: %w", err)
+    }
 
-	if err := os.MkdirAll(targetDir, 0755); err != nil {
-		return fmt.Errorf("failed to create target directory: %w", err)
-	}
+    if !info.Mode().IsRegular() {
+        return fmt.Errorf("executable is not a regular file: %s", executablePath)
+    }
 
-	tarballFile, err := os.OpenFile(tarballPath, os.O_CREATE|os.O_WRONLY|os.O_EXCL, 0666)
-	if err != nil {
-		if errors.Is(err, os.ErrExist) {
-			return fmt.Errorf("target archive path already exists: %s", tarballPath)
-		}
+    if err := os.MkdirAll(targetDir, 0755); err != nil {
+        return fmt.Errorf("failed to create target directory: %w", err)
+    }
+
+    tarballName := info.Name() + ".tar.gz"
+    tarballPath := filepath.Join(targetDir, tarballName)
+
+    tarballFile, err := os.OpenFile(
+        tarballPath,
+        os.O_CREATE|os.O_WRONLY|os.O_EXCL,
+        0666,
+    )
+    if err != nil {
+    	if errors.Is(err, os.ErrExist) {
+        	fmt.Printf("Skipping existing tarball: %s\n", tarballPath)
+        	return nil
+   		}
+    	
 		return fmt.Errorf("failed to create tarball file: %w", err)
 	}
-	defer tarballFile.Close()
 
-	gw := gzip.NewWriter(tarballFile)
-	defer gw.Close()
+    // Remove incomplete archives if anything fails.
+    success := false
+    defer func() {
+        tarballFile.Close()
+        if !success {
+            os.Remove(tarballPath)
+        }
+    }()
 
-	tw := tar.NewWriter(gw)
-	defer tw.Close()
+    gw := gzip.NewWriter(tarballFile)
+    tw := tar.NewWriter(gw)
 
-	header, err := tar.FileInfoHeader(info, info.Name())
+    header, err := tar.FileInfoHeader(info, info.Name())
+    if err != nil {
+        return fmt.Errorf("failed to create tar header: %w", err)
+    }
+
+    header.Name = info.Name()
+
+    if header.PAXRecords == nil {
+        header.PAXRecords = make(map[string]string)
+    }
+
+    header.PAXRecords["headerID"] = headerID
+
+    if err := tw.WriteHeader(header); err != nil {
+        return fmt.Errorf("failed to write header: %w", err)
+    }
+
+    if _, err := io.Copy(tw, execFile); err != nil {
+        return fmt.Errorf("failed to copy executable: %w", err)
+    }
+
+    if err := tw.Close(); err != nil {
+        return fmt.Errorf("failed to close tar writer: %w", err)
+    }
+
+    if err := gw.Close(); err != nil {
+        return fmt.Errorf("failed to close gzip writer: %w", err)
+    }
+
+    if err := tarballFile.Close(); err != nil {
+        return fmt.Errorf("failed to close tarball file: %w", err)
+    }
+
+    success = true
+
+    fmt.Printf("Successfully created: %s\n", tarballPath)
+    return nil
+}
+
+func ReadTarballHeader(tarballPath string) (string, error) {
+	file, err := os.Open(tarballPath)
 	if err != nil {
-		return fmt.Errorf("failed to create tar header: %w", err)
+		return "", fmt.Errorf("failed to open archive: %w", err)
 	}
-	header.Name = info.Name()
+	defer file.Close()
 
-	if err := tw.WriteHeader(header); err != nil {
-		return fmt.Errorf("failed to write header: %w", err)
+	gr, err := gzip.NewReader(file)
+	if err != nil {
+		return "", fmt.Errorf("failed to initialize gzip reader: %w", err)
+	}
+	defer gr.Close()
+
+	tr := tar.NewReader(gr)
+
+	header, err := tr.Next()
+	if err != nil {
+		if errors.Is(err, io.EOF) {
+			return "", fmt.Errorf("archive is empty")
+		}
+		return "", fmt.Errorf("failed to read tar entry: %w", err)
 	}
 
-	if _, err := io.Copy(tw, execFile); err != nil {
-		return fmt.Errorf("failed to copy file contents: %w", err)
+	headerID, exists := header.PAXRecords["headerID"]
+	if !exists {
+		return "", fmt.Errorf("headerID not found in this archive's metadata")
 	}
 
-	fmt.Printf("Successfully created: %s\n", tarballPath)
-	return nil
+	return headerID, nil
 }

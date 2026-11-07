@@ -3,83 +3,42 @@ package main
 import (
 	"fmt"
 	"log"
-	"os"
-	"os/exec"
-	"path/filepath"
+	"github.com/google/uuid"
 	"server/core"
 )
 
-const COMPILE_ERR = -1
-const COMPILE_SUCCESS = 0
-
-var REPO_DIR = filepath.Join("..", "..", "Packages", "repo")
-var BIN_DIR  = filepath.Join(REPO_DIR, "bin")
-var TAR_DIR  = filepath.Join(REPO_DIR, "tarball")
-
-func compile() int {
-	var cmd *exec.Cmd;
-
-	cmd = exec.Command("make")
-	cmd.Dir = REPO_DIR
-	
-	output, err := cmd.CombinedOutput()
-	
-	if err != nil {
-		log.Fatalf("Failure compiling: %s", err)
-		return COMPILE_ERR
-	}
-
-	fmt.Printf("Compile: \n%s", string(output))
-	return COMPILE_SUCCESS
-}
-
-func getExecutables() ([]string, error) {
-    entries, err := os.ReadDir(BIN_DIR)
-    if err != nil {
-        return nil, err
-    }
-
-    var executables []string
-
-    for _, entry := range entries {
-        if !entry.IsDir() {
-            continue
-        }
-
-        program := entry.Name()
-        executable := filepath.Join(BIN_DIR, program, program)
-
-        info, err := os.Stat(executable)
-        if err != nil || info.IsDir() {
-            continue
-        }
-
-        executables = append(executables, executable)
-    }
-
-    return executables, nil
-}
-
 func main ()  {
-	var compilation = compile()
+	var compilation = core.Compile()
 
-	if compilation == COMPILE_ERR {
+	if compilation == core.COMPILE_ERR {
+		log.Println("Compilation failed.")
 		return;
 	}
 
-	var executables, err = getExecutables();
-
+    executables, err := core.GetAll(core.BIN_DIR)
+	
 	if err != nil {
+		log.Printf("Error reading BIN_DIR (%s): %v\n", core.BIN_DIR, err.Error())
 		return;
 	}
 
 	for i := 0; i < len(executables); i++ {
-		create := core.CreateTarball(TAR_DIR, executables[i]);
+		var headerID = uuid.New().String();
+		create := core.CreateTarball(core.TAR_DIR, executables[i], string(headerID));
 
 		if create != nil {
 			return;
 		}
 	}
 
-	core.InitServer(TAR_DIR)
+	fmt.Printf("Executables found: %v\n", executables)
+
+	var createIndex = core.CreateIndex();
+
+	if createIndex != core.INDEX_SUCCESS {
+		log.Println("Error creating index.")
+		return;
+	}
+
+	core.InitServer(core.TAR_DIR)
 }
