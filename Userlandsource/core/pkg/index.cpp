@@ -18,7 +18,6 @@ bool loadIndex(std::vector<indexEntry> &out){
         std::istringstream ss(line);
         indexEntry e;
         if (!(ss >> e.name >> e.version >> e.filename)) continue;
-        ss >> e.SHA256;
         out.push_back(e);
     }
 
