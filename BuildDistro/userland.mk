@@ -1,20 +1,20 @@
 # Builds the EC-Distro userland (../Userlandsource).
 #
 #   make              build everything into build/rootfs/bin
-#   make shell        only the shell (main.cpp + core/shell)
+#   make shell        only the shell (main.c + core/shell)
 #   make tools        hello, ls
 #   make pkg          package manager
 #   make clean
 #
-# Override as needed: make CXX=/opt/gcc/bin/g++ STATIC=0 JOBS=...
+# Override as needed: make CC=/opt/gcc/bin/gcc STATIC=0 JOBS=...
 
 SRC      := ../Userlandsource
 BUILD    := build
 OBJ      := $(BUILD)/obj
 BIN      := $(BUILD)/rootfs/bin
 
-CXX      ?= g++
-CXXFLAGS ?= -std=c++17 -O2 -Wall -Wextra
+CC       ?= gcc
+CFLAGS   ?= -std=gnu11 -O2 -Wall -Wextra
 STATIC   ?= 1
 ifeq ($(STATIC),1)
 LDFLAGS  += -static
@@ -22,12 +22,12 @@ endif
 
 CPPFLAGS += -I$(SRC)
 
-SHELL_SRCS := $(SRC)/main.cpp $(wildcard $(SRC)/core/shell/*.cpp)
-PKG_SRCS   := $(wildcard $(SRC)/core/pkg/*.cpp)
+SHELL_SRCS := $(SRC)/main.c $(wildcard $(SRC)/core/shell/*.c)
+PKG_SRCS   := $(wildcard $(SRC)/core/pkg/*.c)
 TOOLS      := hello ls
 
-SHELL_OBJS := $(patsubst $(SRC)/%.cpp,$(OBJ)/%.o,$(SHELL_SRCS))
-PKG_OBJS   := $(patsubst $(SRC)/%.cpp,$(OBJ)/%.o,$(PKG_SRCS))
+SHELL_OBJS := $(patsubst $(SRC)/%.c,$(OBJ)/%.o,$(SHELL_SRCS))
+PKG_OBJS   := $(patsubst $(SRC)/%.c,$(OBJ)/%.o,$(PKG_SRCS))
 
 .SECONDARY:
 .PHONY: all shell tools pkg clean
@@ -38,18 +38,18 @@ tools: $(addprefix $(BIN)/,$(TOOLS))
 pkg:   $(BIN)/pkg
 
 $(BIN)/ecsh: $(SHELL_OBJS) | $(BIN)
-	$(CXX) $(LDFLAGS) $^ -o $@
+	$(CC) $(LDFLAGS) $^ -o $@
 
 $(BIN)/pkg: $(PKG_OBJS) | $(BIN)
-	$(CXX) $(LDFLAGS) $^ -o $@
+	$(CC) $(LDFLAGS) $^ -o $@
 
-# Each tool is a single file: core/tools/<name>.cpp
+# Each tool is a single file: core/tools/<name>.c
 $(BIN)/%: $(OBJ)/core/tools/%.o | $(BIN)
-	$(CXX) $(LDFLAGS) $< -o $@
+	$(CC) $(LDFLAGS) $< -o $@
 
-$(OBJ)/%.o: $(SRC)/%.cpp
+$(OBJ)/%.o: $(SRC)/%.c
 	@mkdir -p $(dir $@)
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -MMD -MP -c $< -o $@
+	$(CC) $(CPPFLAGS) $(CFLAGS) -MMD -MP -c $< -o $@
 
 $(BIN):
 	@mkdir -p $@

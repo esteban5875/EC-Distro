@@ -6,7 +6,7 @@
 #   Stage 3 (kernel):   fetches the latest stable Linux kernel, builds it with
 #                       that GCC, copies the GCC toolchain and the userland tools
 #                       (bin/) into the kernel files, and packs an initramfs whose
-#                       /init (PID 1) is the shell (ecsh, from main.cpp).
+#                       /init (PID 1) is the shell (ecsh, from main.c).
 #   Stage 4 (export):   minimal stage holding only the artifacts.
 #
 # The build context must be the repository root (it needs Userlandsource/):
@@ -75,7 +75,7 @@ COPY BuildDistro/userland.mk /work/BuildDistro/userland.mk
 WORKDIR /work/BuildDistro
 RUN set -eux; \
     n="${JOBS}"; [ "$n" -gt 0 ] || n="$(nproc)"; \
-    make -f userland.mk -j"$n" CXX=/opt/gcc/bin/g++ STATIC=1
+    make -f userland.mk -j"$n" CC=/opt/gcc/bin/gcc STATIC=1
 
 # --------------------------------------------------------------- Kernel
 # Prebuilt minimal kernel (Alpine "virt" flavour) instead of compiling Linux.

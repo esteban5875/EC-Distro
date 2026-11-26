@@ -1,38 +1,35 @@
 #pragma once
 
-#include <string>
-#include <string_view>
-#include <unordered_map>
-#include <vector>
+#include <stddef.h>
 
-enum class CommandName { Echo, Type, Clear, Exit, Pwd, Cd, External };
+#define SHELL_OUT_BUFFER char[4096]
+#define SHELL_IN_BUFFER char[4096]
 
-enum class LookupStatus { Found, NotFound, NotExecutable, NotRegular, PathUnset };
+typedef int (*cmd_method) (const COMMAND_INPUT);
 
-struct LookupResult {
-    LookupStatus status;
-    std::string  path;
-};
+typedef enum {
+    ALIAS,
+    NONE
+} BUILT_IN_COMMAND;
 
-inline const std::unordered_map<std::string, CommandName> CommandMap = {
-    {"echo", CommandName::Echo},
-    {"type", CommandName::Type},
-    {"clear", CommandName::Clear},
-    {"exit", CommandName::Exit},
-    {"pwd",  CommandName::Pwd},
-    {"cd", CommandName::Cd}
-};
+typedef struct {
+    const size_t size;
+    const char*  data;
+} STRING;
 
-struct Command {
-    CommandName name = CommandName::External;
-    std::string enteredInput;            // what the user typed as the command name
-    std::vector<std::string> args;
+typedef struct {
+    STRING  command;
+    STRING* args;
+    size_t  args_num;
+} COMMAND_INPUT;
 
-    bool isBuiltin() const { return name != CommandName::External; }
-};
+typedef struct {
+    BUILT_IN_COMMAND name;
+    int             args_max_num;
+    const char*     usage;
+    const cmd_method      method;
+} COMMAND;
 
-int getWorkingDir();
-int runExternal(const std::string& path, Command* command);
-int parse(const std::string& line, Command* out);
-void parsePath(const std::string& line, std::vector<std::string>* out);
-LookupResult findInPath(const std::string& name);
+BUILT_IN_COMMAND Parse(const COMMAND_INPUT cmd_in);
+int              Exec (const  BUILT_IN_COMMAND cmd);
+

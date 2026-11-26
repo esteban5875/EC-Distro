@@ -1,5 +1,5 @@
 #pragma once
 
-void initSystem();
-void readOrphans();
-[[noreturn]] void powerOff();
+void initSystem(void);
+void readOrphans(void);
+_Noreturn void powerOff(void);
