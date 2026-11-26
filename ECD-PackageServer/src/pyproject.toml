@@ -1,0 +1,9 @@
+[project]
+name = "EC-PkgServer"
+dynamic = ["version"]
+dependencies = [
+    "cryptography>=50.0.2",
+    "fastapi>=0.165.0",
+    "python-multipart>=0.0.34",
+    "uvicorn>=0.54.0",
+]
