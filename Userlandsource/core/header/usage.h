@@ -1,7 +1,8 @@
 #pragma once
 
-const char ALIAS_USAGE[] = {
-    #embed "../usages/ALIAS.txt"
-    , '\0'
+
+const char ECHO_USAGE[] = {
+    #embed "../usages/echo.txt"
+    , 0
 };
 

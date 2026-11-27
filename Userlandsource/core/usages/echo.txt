@@ -1,0 +1,13 @@
+ECHO(1)											 General Commands Manual										 ECHO(1)
+
+NAME
+       echo - Display a line of text
+
+DESCRIPTION
+       Display a line of text
+
+OPTIONS
+       -h, --help
+	      Print help
+
+       [STRING]

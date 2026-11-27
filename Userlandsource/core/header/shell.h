@@ -2,34 +2,26 @@
 
 #include <stddef.h>
 
-#define SHELL_OUT_BUFFER char[4096]
-#define SHELL_IN_BUFFER char[4096]
-
-typedef int (*cmd_method) (const COMMAND_INPUT);
+typedef int (*cmd_method) (const char** args, const size_t argnum);
 
 typedef enum {
-    ALIAS,
+    ECHO,
     NONE
 } BUILT_IN_COMMAND;
 
 typedef struct {
-    const size_t size;
-    const char*  data;
-} STRING;
-
-typedef struct {
-    STRING  command;
-    STRING* args;
-    size_t  args_num;
+    const char*  command;
+    const char** args;
+    const size_t argsNum;
 } COMMAND_INPUT;
 
 typedef struct {
     BUILT_IN_COMMAND name;
-    int             args_max_num;
-    const char*     usage;
-    const cmd_method      method;
-} COMMAND;
+    cmd_method       method;
+    const char*      as_string;
+    const size_t     max_args_num;
+} LOOKUP_COMMAND;
 
-BUILT_IN_COMMAND Parse(const COMMAND_INPUT cmd_in);
-int              Exec (const  BUILT_IN_COMMAND cmd);
-
+COMMAND_INPUT    Lexer(const char* input);
+BUILT_IN_COMMAND Parse(COMMAND_INPUT* cmd_in);
+int              Exec (BUILT_IN_COMMAND* cmd);
